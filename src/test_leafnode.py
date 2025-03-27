@@ -39,3 +39,6 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("", "text", "")
         print(node.to_html())
         self.assertEqual(node.to_html(), "text")
+
+if __name__== "main__":
+    unittest.main()

@@ -1,5 +1,6 @@
-from textnode import TextNode
-from textnode import TextType
+from textnode import TextNode, TextNode
+from parentnode import ParentNode
+from leafnode import LeafNode
 
 def main():
     test = TextNode("Some text", TextType.BOLD, "www.boot.dev")

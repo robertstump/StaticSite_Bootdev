@@ -259,4 +259,32 @@ class TestParentNode(unittest.TestCase):
         print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Deep <i>Styled <u>Underlined <span style=\"color:navy; font-size:15px;\">Text with <a href=\"https://example.com\" title=\"Visit Example\" target=\"_blank\" style=\"text-decoration:none; color:crimson; font-weight:bold;\">external link</a>, plus <abbr title=\"Extensible Markup Language\" style=\"border-bottom:1px dotted gray; cursor:help;\">XML</abbr> and <code style=\"background-color:#f4f4f4; padding:2px 4px; border:1px solid #ccc;\">console.log()</code>inside a <span style=\"color:darkgreen; font-style:italic; font-weight:600;\">styled span</span>.</span></u></i></b> That's a wrap!</p>")
 
- 
+    def test_to_html_mixed_siblings_and_nested(self):
+        node = ParentNode("div", [
+            LeafNode("h1", "Title", {"style": "font-size:20px;"}),
+            LeafNode(None, "Intro text. "),
+            ParentNode("p", [
+                LeafNode(None, "This is a "),
+                LeafNode("a", "link", {"href": "https://test.com", "target": "_blank"}),
+                LeafNode(None, " in a paragraph.")
+            ]),
+            LeafNode("hr", "", {"style": "margin-top:20px;"}),
+            ParentNode("footer", [
+                LeafNode(None, "Footer text.")
+            ], {"style": "font-size:10px;"})
+        ])
+        print(node.to_html())
+        self.assertEqual(node.to_html(), '<div><h1 style="font-size:20px;">Title</h1>Intro text. <p>This is a <a href="https://test.com" target="_blank">link</a> in a paragraph.</p><hr style="margin-top:20px;"><footer style="font-size:10px;">Footer text.</footer></div>')
+
+    def test_to_html_self_closing_and_empty(self):
+        node = ParentNode("section", [
+            LeafNode("img", None, {"src": "image.jpg", "alt": "desc", "style": "width:100px;"}),
+            LeafNode("br", None),
+            LeafNode("span", "", {"style": "color:gray;"}),
+            LeafNode(None, "Text after image and line break.")
+        ])
+        print(node.to_html())
+        self.assertEqual(node.to_html(), '<section><img src="image.jpg" alt="desc" style="width:100px;"><br><span style="color:gray;"></span>Text after image and line break.</section>')
+
+if __name__== "main__":
+    unittest.main()
