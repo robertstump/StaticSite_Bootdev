@@ -11,28 +11,28 @@ child_list = ["node2", "node3", "node4"]
 class TestHTMLNode(unittest.TestCase):
     def test_props_base(self):
         node = HTMLNode("p", "the stuff in tag", child_list, props_dict)
-        print(node)
-        print()
+        #print(node)
+        #print()
     
     def test_props_one(self):
         node = HTMLNode(None, "A paragraph of text", child_list, props_dict)
-        print(node)
-        print()
+        #print(node)
+        #print()
 
     def test_props_two(self):
         node = HTMLNode("p", None, child_list, props_dict)
-        print(node)
-        print()
+        #print(node)
+        #print()
 
     def test_props_third(self):
         node = HTMLNode("p", "A paragraph of text", None, props_dict)
-        print(node)
-        print()
+        #print(node)
+        #print()
 
     def test_props_fourth(self):
         node = HTMLNode("p", "A paragraph of text", child_list, None)
-        print(node)
-        print()
+        #print(node)
+        #print()
 
     def test_not_string(self):
         node = HTMLNode(0, 0, 0, 0)

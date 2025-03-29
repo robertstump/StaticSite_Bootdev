@@ -6,14 +6,14 @@ class TestParentNode(unittest.TestCase):
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
-        print(parent_node.to_html())
+        #print(parent_node.to_html())
         self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
 
     def test_to_html_with_grandchildren(self):
         grandchild_node = LeafNode("b", "grandchild")
         child_node = ParentNode("span", [grandchild_node])
         parent_node = ParentNode("div", [child_node])
-        print(parent_node.to_html())
+        #print(parent_node.to_html())
         self.assertEqual(
             parent_node.to_html(),
             "<div><span><b>grandchild</b></span></div>"
@@ -23,7 +23,7 @@ class TestParentNode(unittest.TestCase):
          child1 = LeafNode("b", "grandchild")
          child2 = LeafNode(None, "second child")
          parent_node = ParentNode("div", [child1, child2])
-         print(parent_node.to_html())
+         #print(parent_node.to_html())
          self.assertEqual(parent_node.to_html(), "<div><b>grandchild</b>second child</div>")
     
     def test_to_html_parent_props(self):
@@ -33,7 +33,7 @@ class TestParentNode(unittest.TestCase):
             LeafNode("sup", "Super")
             ], 
             {"style" : "color:blue;"})
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<span style=\"color:blue;\">Blue <sup>Super</sup></span>")
 
 
@@ -46,7 +46,7 @@ class TestParentNode(unittest.TestCase):
             LeafNode("i", "italic text"),
             LeafNode(None, "Normal text"),
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
 
     def test_to_html_sam2(self):
@@ -60,7 +60,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Normal text")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>and italic</i> text</b> Normal text</p>")
 
     def test_to_html_sam3(self):
@@ -78,7 +78,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Normal")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined</u></i> Text</b> Normal</p>")
 
     def test_to_html_sam4(self):
@@ -99,7 +99,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Text")
         ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined <span style=\"color:red;\">Red</span></u></i></b> Text</p>")
     
     def test_to_html_sam5(self):
@@ -124,7 +124,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Text")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined <span style=\"color:blue;\">Blue <sup>Super</sup></span></u></i></b> Text</p>")
 
     def test_to_html_sam6(self):
@@ -153,7 +153,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Text")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined <span style=\"color:green;\">Green <sup>Super <sub>Sub</sub></sup></span></u></i></b> Text</p>")
 
     def test_to_html_sam7(self):
@@ -186,7 +186,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " End")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined <span style=\"color:purple;\">Purple <sup>Super <sub>Sub <a href=\"#\">Link</a></sub></sup></span></u></i></b> End</p>")
 
     def test_to_html_sam8(self):
@@ -224,7 +224,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " Done.")
             ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Bold <i>Italic <u>Underlined <span style=\"color:brown; font-size:14px;\">Brown Text <abbr title=\"Application Programming Interface\">API</abbr><sup>Super <sub>Sub <a href=\"#\"><code>code()</code><span style=\"color:darkred; font-weight:bold;\">Important</span></a></sub></sup></span></u></i></b> Done.</p>")
 
     def test_to_html_sam9(self):
@@ -256,7 +256,7 @@ class TestParentNode(unittest.TestCase):
                 ]),
             LeafNode(None, " That's a wrap!")
         ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), "<p><b>Deep <i>Styled <u>Underlined <span style=\"color:navy; font-size:15px;\">Text with <a href=\"https://example.com\" title=\"Visit Example\" target=\"_blank\" style=\"text-decoration:none; color:crimson; font-weight:bold;\">external link</a>, plus <abbr title=\"Extensible Markup Language\" style=\"border-bottom:1px dotted gray; cursor:help;\">XML</abbr> and <code style=\"background-color:#f4f4f4; padding:2px 4px; border:1px solid #ccc;\">console.log()</code>inside a <span style=\"color:darkgreen; font-style:italic; font-weight:600;\">styled span</span>.</span></u></i></b> That's a wrap!</p>")
 
     def test_to_html_mixed_siblings_and_nested(self):
@@ -273,7 +273,7 @@ class TestParentNode(unittest.TestCase):
                 LeafNode(None, "Footer text.")
             ], {"style": "font-size:10px;"})
         ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), '<div><h1 style="font-size:20px;">Title</h1>Intro text. <p>This is a <a href="https://test.com" target="_blank">link</a> in a paragraph.</p><hr style="margin-top:20px;"><footer style="font-size:10px;">Footer text.</footer></div>')
 
     def test_to_html_self_closing_and_empty(self):
@@ -283,7 +283,7 @@ class TestParentNode(unittest.TestCase):
             LeafNode("span", "", {"style": "color:gray;"}),
             LeafNode(None, "Text after image and line break.")
         ])
-        print(node.to_html())
+        #print(node.to_html())
         self.assertEqual(node.to_html(), '<section><img src="image.jpg" alt="desc" style="width:100px;"><br><span style="color:gray;"></span>Text after image and line break.</section>')
 
 if __name__== "main__":
