@@ -60,19 +60,23 @@ class TestMDImageExtract(unittest.TestCase):
 
     def test_no_images(self):
         test_text = "this is a plain string"
-        self.assertRaises(ValueError, extract_markdown_images, test_text)
+        extraction = extract_markdown_images(test_text)
+        self.assertEqual(extraction, [])
 
     def test_empty_string(self):
         test_text = ""
-        self.assertRaises(ValueError, extract_markdown_images, test_text)
+        extraction = extract_markdown_images(test_text)
+        self.assertEqual(extraction, []) 
 
     def test_bad_format(self):
         test_text = "this is wrong ! [bad](local/no_good.bmp)"
-        self.assertRaises(ValueError, extract_markdown_images, test_text)
+        extraction = extract_markdown_images(test_text)
+        self.assertEqual(extraction, [])
 
     def test_escaped_format(self):
-        test_text = r"this is also wrong \!\[bad\]\(local/no_good.bmp\)"
-        self.assertRaises(ValueError, extract_markdown_images, test_text)
+        test_text = "this is also wrong \!\[bad\]\(local/no_good.bmp\)"
+        extraction = extract_markdown_images(test_text)
+        self.assertEqual(extraction, [])
 
     def test_empty_alt(self):
         test_text = "empty alt test image: ![](local/ablist.jpg)"
@@ -97,55 +101,55 @@ class TestMDLinkExtract(unittest.TestCase):
     def test_only_link(self):
         test_text = "[click me](web.site)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("click me", "web.site")])
 
     def test_simple_link(self):
         test_text = "This is a [link](boot.dev)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "boot.dev")])
         
     def test_double_link(self):
         test_text = "These are two [link](boot.dev) and [link2](web.site)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "boot.dev"), ("link2", "web.site")])
 
     def test_link_first(self):
         test_text = "[link](boot.dev) and then some text."
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "boot.dev")]) 
 
     def test_link_exclaim(self):
         test_text = "Whoa, check out the link! [link](boot.dev)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "boot.dev")])
 
     def test_with_extra_paren(self):
         test_text = "Pictured: Kermit the Frog(left), Miss Piggy(right)[link](muppets.com)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "muppets.com")])
 
     def test_with_image_and_link(self):
         test_text = "![dog](local/dog.jpg) This is a link[link](link.link)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("link", "link.link")])
 
     def test_link_in_paren(self):
         test_text = "TFA (Totally [Freaking](awesome.sauce) Awesome)"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("Freaking", "awesome.sauce")])
 
     def test_link_with_special_chars(self):
         test_text = "Be [3!337](leetcode.com), nah just kidding"
         extraction = extract_markdown_links(test_text)
-        print(extraction)
+        #print(extraction)
         self.assertEqual(extraction, [("3!337", "leetcode.com")])
 
     def test_broken_link_tag(self):
@@ -158,11 +162,13 @@ class TestMDLinkExtract(unittest.TestCase):
 
     def test_no_links(self):
         test_text = "this is a plain string"
-        self.assertRaises(ValueError, extract_markdown_links, test_text)
+        extraction = extract_markdown_links(test_text)
+        self.assertEqual(extraction, [])
 
     def test_empty_link_string(self):
         test_text = ""
-        self.assertRaises(ValueError, extract_markdown_links, test_text)
+        extraction = extract_markdown_links(test_text)
+        self.assertEqual(extraction, [])
 
     def test_bad_link_format(self):
         test_text = "this is wrong [bad(local/no_good.com)"

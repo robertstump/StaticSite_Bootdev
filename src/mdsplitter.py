@@ -1,4 +1,4 @@
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType 
 import re
 
 def split_nodes_delimitter(old_nodes, delimitter, text_type):
@@ -33,6 +33,9 @@ def split_nodes_delimitter(old_nodes, delimitter, text_type):
 
 def extract_markdown_images(text):
     image_list = []
+    if text == "":
+        return image_list
+
     image_strings_join = ""
     image_strings = re.findall(r"(\!\[)(.*?)(\))", text)
     #image_strings = re.findall(r"(!\[(.*?)\]\(([^\s()]+(?:\([^\s()]*\)[^\s()]*)*)\))", text)
@@ -51,12 +54,18 @@ def extract_markdown_images(text):
             if src_ext[i] == "":
                 raise ValueError("must have valid src")
     else:
-        raise ValueError("text contains partial image tags")
+        if '](' in text and '[' not in text:
+            raise ValueError("text contains partial image tags")
+        if '![' in text and '](' not in text:
+            raise ValueError("missing close bracket, open parentheses")
 
     return image_list
 
 def extract_markdown_links(text):
     link_list = []
+    if text == "":
+        return link_list
+
     link_strings_join = ""
     link_strings = re.findall(r"((?<!!)\[)(.*?)(\))", text)
 
@@ -73,6 +82,68 @@ def extract_markdown_links(text):
             if url_ext[i] == "":
                 raise ValueError("must have valid url")
     else: 
-        raise ValueError("text contains partial link tags")
+        if '[' not in text and '](' in text: 
+            raise ValueError("missing close bracket")
+        elif  '[' in text and not ']' in text: 
+            raise ValueError("text contains partial link tags")
+        elif '[' in text and '](' in text and ')' not in text:
+            raise ValueError("missing close parentheses")
+        elif ')' in text and '](' not in text:
+            raise ValueERror("missing open parentheses")
 
     return link_list
+
+def split_nodes_images(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            new_nodes.append(node)
+            continue
+        
+        divisions = re.split(r"(!\[.*?\))", node.text)
+        extraction = extract_markdown_images(node.text)
+
+        split_nodes = []
+        extraction_count = 0
+        for i in range(0, len(divisions)):
+            if divisions[i] == "":
+                continue
+            elif divisions[i][0] == '!' and divisions[i][1] == "[": 
+                split_nodes.append(TextNode(extraction[extraction_count][0], TextType.IMAGE, extraction[extraction_count][1]))
+                extraction_count += 1
+            else:
+                split_nodes.append(TextNode(divisions[i], TextType.NORMAL))
+        new_nodes.extend(split_nodes)
+
+    if len(new_nodes) == 0:
+        return old_nodes
+
+    return new_nodes
+        
+def split_nodes_links(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            new_nodes.append(node)
+            continue
+
+        divisions = re.split(r"(?<!!)(\[.*?\))", node.text)
+        extraction = extract_markdown_links(node.text)
+
+        split_nodes = []
+        extraction_count = 0
+        for i in range(0, len(divisions)):
+            if divisions[i] == "":
+                continue
+            elif divisions[i][0] == '[' and '](' in divisions[i]:
+                split_nodes.append(TextNode(extraction[extraction_count][0], TextType.LINK, extraction[extraction_count][1]))
+                extraction_count += 1 
+            else:
+                split_nodes.append(TextNode(divisions[i], TextType.NORMAL))
+        new_nodes.extend(split_nodes)
+
+    if len(new_nodes) == 0:
+        return old_nodes
+    
+    return new_nodes
+
