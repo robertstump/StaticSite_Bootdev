@@ -147,3 +147,26 @@ def split_nodes_links(old_nodes):
     
     return new_nodes
 
+def text_to_text_nodes(text):
+    node = TextNode(text, TextType.NORMAL)
+    new_nodes = split_nodes_delimitter([node], '**', TextType.BOLD)
+    new_nodes = split_nodes_delimitter(new_nodes, '_', TextType.ITALIC)
+    new_nodes = split_nodes_delimitter(new_nodes, "`", TextType.CODE)
+    new_nodes = split_nodes_images(new_nodes)
+    new_nodes = split_nodes_links(new_nodes)
+    return new_nodes
+
+def markdown_to_blocks(markdown):
+    block_list = [] 
+
+    if markdown == "":
+        return block_list
+
+    tmp_list = markdown.split("\n\n")
+    for block in tmp_list:
+        block = block.strip()
+        if block == '':
+            continue
+        block_list.append(block)
+
+    return block_list

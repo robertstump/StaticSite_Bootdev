@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from mdsplitter import text_to_text_nodes
+from mdsplitter import text_to_text_nodes, markdown_to_blocks
 
 class TestTextToTextNode(unittest.TestCase):
     def test_given_test(self):
@@ -149,5 +149,97 @@ class TestTextToTextNode(unittest.TestCase):
             TextNode(".", TextType.NORMAL)
             ])
 
+class TestMDToBlock(unittest.TestCase):
+    def test_given_test(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks,
+        [
+        "This is **bolded** paragraph",
+        "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+        "- This is a list\n- with items",
+        ],
+        )
+
+    def test_header_paragraph(self):
+        md1 = "# Header One\n\nThis is a paragraph under a header."
+        blocks = markdown_to_blocks(md1)
+        self.assertEqual(blocks,
+            [
+            "# Header One",
+            "This is a paragraph under a header."
+            ])
+
+    def test_header_two_lines(self):
+        md2 = "## Subheader\n\nAnother paragraph here with two lines.\nStill part of the same block."
+        blocks = markdown_to_blocks(md2)
+        self.assertEqual(blocks,
+            [
+            "## Subheader",
+            "Another paragraph here with two lines.\nStill part of the same block."
+            ])
+
+    def test_list(self):
+        md3 = "- Item 1\n- Item 2\n- Item 3"
+        blocks = markdown_to_blocks(md3)
+        self.assertEqual(blocks,
+            [
+            "- Item 1\n- Item 2\n- Item 3"
+            ])
+
+    def test_ordered_list(self):
+        md4 = "1. First item\n2. Second item\n3. Third item"
+        blocks = markdown_to_blocks(md4)
+        self.assertEqual(blocks,
+            [
+            "1. First item\n2. Second item\n3. Third item"
+            ])
+
+    def test_empty(self):
+        md5 = ""
+        blocks = markdown_to_blocks(md5)
+        self.assertEqual(blocks, [])
+
+    def test_breaks(self):
+        md6 = "\n\n\n"
+        blocks = markdown_to_blocks(md6)
+        self.assertEqual(blocks, [])
+
+    #this really should break differently but we aren't handling bad formatting yet...
+    def test_weird_list(self):
+        md7 = "Paragraph\n- List without break\n- Still list\n\nNew paragraph"
+        blocks = markdown_to_blocks(md7)
+        self.assertEqual(blocks, 
+            [
+            "Paragraph\n- List without break\n- Still list",
+            "New paragraph"
+            ])
+    def test_extra_breaks(self):
+        md8 = "This is spaced oddly\n\n\n\n\nBut still should become separate blocks"
+        blocks = markdown_to_blocks(md8)
+        self.assertEqual(blocks, 
+            [
+            "This is spaced oddly",
+            "But still should become separate blocks"
+            ])
+
+    def test_leading_space(self):
+        md9 = "   This line has leading spaces\n\n   So does this one"
+        blocks = markdown_to_blocks(md9)
+        self.assertEqual(blocks,
+            [
+            "This line has leading spaces",
+            "So does this one"
+            ])
+        
 if __name__ == "main__()":
     unittest.main()
