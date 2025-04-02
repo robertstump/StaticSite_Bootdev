@@ -157,10 +157,28 @@ def text_to_text_nodes(text):
     return new_nodes
 
 def markdown_to_blocks(markdown):
-    block_list = [] 
+    block_list = []
 
     if markdown == "":
         return block_list
+    
+    if  '```' in markdown:
+        start = markdown.find('```')
+        if '```' in markdown[start + 3:]:
+            block_list = markdown_to_blocks(markdown[:start])
+            end = markdown[start + 3:].find('```') + (start + 3)
+            
+            code_block = markdown[start:end + 3]
+            code_block = code_block.split('\n')
+            tmp_code_list = []
+            for code in code_block:
+                code = code.strip()
+                tmp_code_list.append(code)
+            code_block = '\n'.join(tmp_code_list)
+
+            block_list.append(code_block)
+            block_list.extend(markdown_to_blocks(markdown[end + 3:]))
+            return block_list     
 
     tmp_list = markdown.split("\n\n")
     for block in tmp_list:
@@ -168,5 +186,6 @@ def markdown_to_blocks(markdown):
         if block == '':
             continue
         block_list.append(block)
+
 
     return block_list

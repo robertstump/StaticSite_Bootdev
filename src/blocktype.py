@@ -1,4 +1,5 @@
 import re
+import textwrap
 from enum import Enum
 
 class BlockType(Enum):
@@ -11,6 +12,8 @@ class BlockType(Enum):
     OL = "ordered_list"
 
 def block_to_block_type(markdown):
+    markdown = textwrap.dedent(markdown).strip()
+
     if markdown == '':
         return BlockType.PARA
 
@@ -19,7 +22,8 @@ def block_to_block_type(markdown):
             return BlockType.HEAD
     
     if markdown.startswith("```"):
-        if markdown.endswith("```"): 
+        code_index = markdown.find('```')
+        if '```' in markdown[code_index + 3:]: 
             return BlockType.CODE
         else:
             raise ValueError("code block must end with three backticks")
@@ -37,12 +41,12 @@ def block_to_block_type(markdown):
         for line in ul_lines:
             line = line.strip()
             if not line.startswith("- "):
-                raise ValueError("each line much be part of ordered list")
+                raise ValueError("each line much be part of unordered list")
         return BlockType.UL
     
-    if markdown[0] == "1" and markdown[1] == '.':
+    if markdown.startswith(r'1.'):
         if '\n' in markdown and not re.search(r"(\n\d\.)", markdown):
-            raise ValueError("every line of list must be numberered")
+            raise ValueError("every line of list must be numbered")
         ol_lines = markdown.splitlines()
         count = 0
         correct_num = True
