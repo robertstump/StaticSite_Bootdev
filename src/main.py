@@ -58,9 +58,8 @@ def extract_title(markdown):
     markdown_list = markdown.splitlines()
     for i in range(len(markdown_list)):
         if markdown_list[i].startswith("# "):
-            result = markdown_to_html_node(markdown_list[i]).to_html()
-            markdown_list.remove(markdown_list[i])
-            return (result[5:-6], '\n'.join(markdown_list).strip())
+            result = markdown_list[i][2:]
+            return (result, '\n'.join(markdown_list).strip())
 
 def generate_page(from_path, template_path, dest_path):
     file = open(from_path, "r")
@@ -98,6 +97,40 @@ def generate_page(from_path, template_path, dest_path):
     file.write(html)
     return True
 
+def copy_content_to_public(source_path, template_path, destination):
+
+    if os.path.exists(source_path):
+        source_list = os.listdir(source_path)
+        print(f"CONTENT SOURCE LIST: {source_list}")
+    else:
+        print(f"CONTENT DIRECTORY DOES NOT EXIST: {source_path}")
+        return False
+
+    print(source_list)
+    generate_page_recurse(source_list, source_path, template_path, destination)
+    #return True
+
+def generate_page_recurse(source_list, source_path, template_path, destination):
+    list_len = len(source_list)
+    for source in source_list:
+        if os.path.isfile(os.path.join(source_path, source)):
+            source_file = os.path.join(source_path, source)
+            destination_path = os.path.join(destination, source[:-2] + 'html')
+            print(f"Generate from: {source_file} TO: {destination_path}") 
+            generate_page(source_file, template_path, destination_path)
+
+        elif os.path.isdir(os.path.join(source_path, source)):
+            new_source_path = os.path.join(source_path, source)
+            destination_path = os.path.join(destination, source)
+            print(f"MOVE DIR: {new_source_path} TO: {destination_path}")
+            if not os.path.exists(destination_path):
+                os.mkdir(destination_path)
+            generate_page_recurse(os.listdir(new_source_path), new_source_path, template_path, destination_path)
+
+    if list_len == 0:
+        return True
+
+
 def main():
     pub_path = "./public"
     static_path = "./static"
@@ -108,10 +141,10 @@ def main():
 
     copy_static_to_public(static_path, pub_path)
     
-    source_path = "content/index.md"
+    source_path = "content/"
     template_path = "template.html"
-    destination = "public/index.html"
-    status = generate_page(source_path, template_path, destination)
+    destination = "public/"
+    status = copy_content_to_public(source_path, template_path, destination)
     if status:
         print(f"Page Generation Succes")
 
