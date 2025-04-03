@@ -1,8 +1,22 @@
 import unittest
 import textwrap
+from main import extract_title
 from markdown_html import markdown_to_html_node
 from textnode import TextNode, TextType
 from blocktype import BlockType
+
+class TestExtractTitle(unittest.TestCase):
+    def test_header_extact(self):
+        md = textwrap.dedent('''
+        # Tolkien Fan Club
+
+        ![JRR Tolkien sitting](/images/tolkien.png)
+
+        Here's the deal, **I like Tolkien**.
+        ''')
+
+        header_str = extract_title(md)
+        self.assertEqual(header_str[0], "<h1>Tolkien Fan Club</h1>")
 
 class TestMarkdownToHTML(unittest.TestCase):
     

@@ -82,15 +82,15 @@ def extract_markdown_links(text):
             if url_ext[i] == "":
                 raise ValueError("must have valid url")
     else: 
-        if '[' not in text and '](' in text: 
-            raise ValueError("missing close bracket")
-        elif  '[' in text and not ']' in text: 
-            raise ValueError("text contains partial link tags")
-        elif '[' in text and '](' in text and ')' not in text:
+        if '](' in text and '[' not in text:
+            raise ValueError("text contains partial image tags")
+        if '![' in text and '](' not in text:
+            raise ValueError("missing close bracket, open parentheses")
+        if '[' in text and '](' in text and ')' not in text:
             raise ValueError("missing close parentheses")
-        elif ')' in text and '](' not in text:
-            raise ValueERror("missing open parentheses")
-
+        if  '[' in text and not ']' in text: 
+            raise ValueError("text contains partial link tags")
+       
     return link_list
 
 def split_nodes_images(old_nodes):

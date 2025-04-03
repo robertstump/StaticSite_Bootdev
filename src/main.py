@@ -1,5 +1,6 @@
 import os
 import shutil
+from markdown_html import markdown_to_html_node
 
 def clear_pub_dir(pub_path):
 
@@ -52,6 +53,51 @@ def recurse_copy(static_list, static_path, pub_path):
     if list_len == 0:
         return True
 
+def extract_title(markdown):
+    header_line = ""
+    markdown_list = markdown.splitlines()
+    for i in range(len(markdown_list)):
+        if markdown_list[i].startswith("# "):
+            result = markdown_to_html_node(markdown_list[i]).to_html()
+            markdown_list.remove(markdown_list[i])
+            return (result[5:-6], '\n'.join(markdown_list).strip())
+
+def generate_page(from_path, template_path, dest_path):
+    file = open(from_path, "r")
+    source = file.read()
+    if source:
+        print(f"Loaded file at {from_path}")
+    else:
+        print(f"Failed to load file at {from_path}")
+        return False
+
+    file = open(template_path, "r")
+    template = file.read()
+    if source:
+        print(f"Loaded file at {template_path}")
+    else:
+        print(f"Failed to load file at {template_path}")
+        return False
+    
+    print(f"Generating page from {from_path} and {template_path} to {dest_path}")
+
+    header_md = extract_title(source)
+    header = header_md[0]
+    md = header_md[1]
+    start = template.find("{{")
+    end = template.find("}}")
+    content_start = template[end + 2:].find("{{")
+    content_end = template[end + 2:].find("}}")
+    md = markdown_to_html_node(md)
+
+    html = template[:start] + header + template[end + 2:content_start + (end + 2)] + md.to_html() + template[content_end + (end + 4):]
+    print(html) 
+    file = open(dest_path, "w")
+    print(f"Creating file at {file}")
+
+    file.write(html)
+    return True
+
 def main():
     pub_path = "./public"
     static_path = "./static"
@@ -61,6 +107,13 @@ def main():
         print("SUCCESS: Cleared old public directory")
 
     copy_static_to_public(static_path, pub_path)
+    
+    source_path = "content/index.md"
+    template_path = "template.html"
+    destination = "public/index.html"
+    status = generate_page(source_path, template_path, destination)
+    if status:
+        print(f"Page Generation Succes")
 
 
 if __name__ == "__main__":
