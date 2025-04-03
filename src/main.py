@@ -1,3 +1,4 @@
+import sys
 import os
 import shutil
 from markdown_html import markdown_to_html_node
@@ -61,7 +62,7 @@ def extract_title(markdown):
             result = markdown_list[i][2:]
             return (result, '\n'.join(markdown_list).strip())
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(basepath, from_path, template_path, dest_path):
     file = open(from_path, "r")
     source = file.read()
     if source:
@@ -90,14 +91,13 @@ def generate_page(from_path, template_path, dest_path):
     md = markdown_to_html_node(md)
 
     html = template[:start] + header + template[end + 2:content_start + (end + 2)] + md.to_html() + template[content_end + (end + 4):]
-    print(html) 
+    html = html.replace("href=\"/", f"href=\"{basepath}")
     file = open(dest_path, "w")
     print(f"Creating file at {file}")
-
     file.write(html)
     return True
 
-def copy_content_to_public(source_path, template_path, destination):
+def copy_content_to_public(basepath, source_path, template_path, destination):
 
     if os.path.exists(source_path):
         source_list = os.listdir(source_path)
@@ -107,17 +107,17 @@ def copy_content_to_public(source_path, template_path, destination):
         return False
 
     print(source_list)
-    generate_page_recurse(source_list, source_path, template_path, destination)
+    generate_page_recurse(basepath, source_list, source_path, template_path, destination)
     #return True
 
-def generate_page_recurse(source_list, source_path, template_path, destination):
+def generate_page_recurse(basepath, source_list, source_path, template_path, destination):
     list_len = len(source_list)
     for source in source_list:
         if os.path.isfile(os.path.join(source_path, source)):
             source_file = os.path.join(source_path, source)
             destination_path = os.path.join(destination, source[:-2] + 'html')
             print(f"Generate from: {source_file} TO: {destination_path}") 
-            generate_page(source_file, template_path, destination_path)
+            generate_page(basepath, source_file, template_path, destination_path)
 
         elif os.path.isdir(os.path.join(source_path, source)):
             new_source_path = os.path.join(source_path, source)
@@ -125,14 +125,21 @@ def generate_page_recurse(source_list, source_path, template_path, destination):
             print(f"MOVE DIR: {new_source_path} TO: {destination_path}")
             if not os.path.exists(destination_path):
                 os.mkdir(destination_path)
-            generate_page_recurse(os.listdir(new_source_path), new_source_path, template_path, destination_path)
+            generate_page_recurse(basepath, os.listdir(new_source_path), new_source_path, template_path, destination_path)
 
     if list_len == 0:
         return True
 
 
 def main():
-    pub_path = "./public"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = '/'
+
+    #./public for running site gerenator on local host and testing
+    #pub_path = "./public"
+    pub_path = "./docs"
     static_path = "./static"
     
     status_rc = clear_pub_dir(pub_path)
@@ -143,8 +150,8 @@ def main():
     
     source_path = "content/"
     template_path = "template.html"
-    destination = "public/"
-    status = copy_content_to_public(source_path, template_path, destination)
+    destination = "docs/"
+    status = copy_content_to_public(basepath, source_path, template_path, destination)
     if status:
         print(f"Page Generation Succes")
 
