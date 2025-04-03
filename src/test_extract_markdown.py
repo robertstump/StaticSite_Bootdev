@@ -74,7 +74,7 @@ class TestMDImageExtract(unittest.TestCase):
         self.assertEqual(extraction, [])
 
     def test_escaped_format(self):
-        test_text = "this is also wrong \!\[bad\]\(local/no_good.bmp\)"
+        test_text = r"this is also wrong \!\[bad\]\(local/no_good.bmp\)"
         extraction = extract_markdown_images(test_text)
         self.assertEqual(extraction, [])
 
